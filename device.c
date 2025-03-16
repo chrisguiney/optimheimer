@@ -13,6 +13,7 @@ void oph_device_init(struct oph_device* dev)
     nk_font_atlas_begin(&dev->atlas);
 
     const void* image = nk_font_atlas_bake(&dev->atlas, &dev->font_width, &dev->font_height, NK_FONT_ATLAS_RGBA32);
+
     glGenTextures(1, (GLuint*)(&dev->font_id));
     glBindTexture(GL_TEXTURE_2D, dev->font_id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
