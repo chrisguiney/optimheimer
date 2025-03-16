@@ -1,0 +1,9 @@
+[submodule "ext/nuclear"]
+	path = ext/nuclear
+	url = https://github.com/Immediate-Mode-UI/Nuklear.git
+[submodule "ext/nuklear"]
+	path = ext/nuklear
+	url = https://github.com/Immediate-Mode-UI/Nuklear.git
+[submodule "ext/glfw"]
+	path = ext/glfw
+	url = https://github.com/glfw/glfw.git

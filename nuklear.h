@@ -1,0 +1,20 @@
+//
+// Created by chrisg on 3/9/25.
+//
+
+#ifndef NUKLEAR_H
+#define NUKLEAR_H
+
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_STANDARD_BOOL
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#define NK_INCLUDE_COMMAND_USERDATA
+#define NK_UINT_DRAW_INDEX
+#include "ext/nuklear/nuklear.h"
+
+#endif //NUKLEAR_H
