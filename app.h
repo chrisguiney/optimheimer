@@ -7,7 +7,9 @@
 
 #include "oph.h"
 
-void oph_app_init(struct oph_application *app);
+void oph_app_init(
+    const struct oph_configuration *config,
+    struct oph_application *app);
 
 void oph_app_destroy(struct oph_application *app);
 

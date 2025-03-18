@@ -53,28 +53,25 @@ int main(void)
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        abort();
-    }
-    glfwMakeContextCurrent(window);
 
     uint32_t extension_count = 0;
     vkEnumerateInstanceExtensionProperties(NULL, &extension_count, NULL);
 
     printf("Extension count: %d\n", extension_count);
 
+    struct oph_configuration config = {
+        .initial_window_width = 640,
+        .initial_window_height = 480
+    };
 
     struct oph_application app;
-    oph_app_init(&app);
+    oph_app_init(&config, &app);
 
     struct nk_context nk_ctx;
     nk_init_default(&nk_ctx, &app.device.atlas.default_font->handle);
 
-
-
+    GLFWwindow *window = app.presentation.window;
+    glfwMakeContextCurrent(window);
     while (!glfwWindowShouldClose(window))
     {
         tick(window, &nk_ctx, &app);
