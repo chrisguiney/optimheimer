@@ -465,7 +465,10 @@ static void oph_app_init_vk_swapchain(struct oph_application *app)
 
     for(size_t i = 0; i < app->swapchain.n_images; ++i)
     {
-        oph_app_init_vk_imageview(app, i);
+        oph_app_init_vk_imageview(
+            &app->backend.logical_device,
+            &app->swapchain,
+            i);
     }
 }
 
