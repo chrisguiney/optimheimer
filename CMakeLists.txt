@@ -20,6 +20,7 @@ add_executable(optimheimer
         nuklear.c
         app.c
         sys.c
+        allocator.c
 )
 
 target_include_directories(

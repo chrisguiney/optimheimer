@@ -2,8 +2,8 @@
 // Created by chrisg on 3/9/25.
 //
 
-#ifndef NUKLEAR_H
-#define NUKLEAR_H
+#ifndef OPH_NUKLEAR_H
+#define OPH_NUKLEAR_H
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -17,4 +17,4 @@
 #define NK_UINT_DRAW_INDEX
 #include "ext/nuklear/nuklear.h"
 
-#endif //NUKLEAR_H
+#endif //OPH_NUKLEAR_H

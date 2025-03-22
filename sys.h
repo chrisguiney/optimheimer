@@ -12,14 +12,15 @@ extern "C" {
 struct oph_sys;
 struct oph_allocator;
 
-void *oph_calloc(
-    struct oph_sys *sys,
+void* oph_sys_calloc(
+    void* ctx,
     size_t nmemb,
-    size_t size
-);
+    size_t size);
+
+void oph_sys_free(void* ctx, void* ptr);
 
 void oph_sys_init(
-    const struct oph_configuration *config,
+    const struct oph_configuration* config,
     struct oph_sys* sys
 );
 
