@@ -1,4 +1,5 @@
 #include "oph.h"
+#include "sys.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,40 +9,6 @@
 #include <assert.h>
 
 static bool enable_validation_layers = true;
-
-static void *oph_system_calloc(
-    oph_allocator_ctx ctx,
-    size_t nmemb,
-    size_t size)
-{
-    void *ptr = calloc(nmemb, size);
-    if(!ptr)
-    {
-        abort();
-    }
-    return ptr;
-}
-
-static void oph_system_free(oph_allocator_ctx ctx, void *ptr)
-{
-    free(ptr);
-}
-
-static struct oph_allocator default_allocator = {
-    .ctx = nullptr,
-    .calloc = oph_system_calloc,
-    .free = oph_system_free,
-};
-
-
-static void *oph_calloc(
-    struct oph_allocator *allocator,
-    size_t nmemb,
-    size_t size
-    )
-{
-    return allocator->calloc(allocator->ctx, nmemb, size);
-}
 
 
 static bool oph_app_is_vk_device_suitable(
@@ -139,7 +106,7 @@ static void oph_app_init_vk_physical_device(
         nullptr);
 
     dev->surface_formats = oph_calloc(
-        &app->allocator,
+        &app->sys,
         dev->n_surface_formats,
         sizeof(VkSurfaceFormatKHR));
 
@@ -156,7 +123,7 @@ static void oph_app_init_vk_physical_device(
         nullptr);
 
     dev->present_modes = oph_calloc(
-        &app->allocator,
+        &app->sys,
         dev->n_present_modes,
         sizeof(*dev->present_modes));
 
@@ -184,7 +151,7 @@ static void oph_app_init_vk_physical_device(
         nullptr);
 
     dev->extension_properties = oph_calloc(
-        &app->allocator,
+        &app->sys,
         dev->n_extension_properties,
         sizeof(*dev->extension_properties));
 
@@ -200,7 +167,7 @@ static void oph_app_init_vk_physical_device(
         nullptr);
 
     dev->queue_families = oph_calloc(
-        &app->allocator,
+        &app->sys,
         dev->n_queue_families,
         sizeof(*dev->queue_families));
 
@@ -235,12 +202,12 @@ static void oph_app_init_vk_physical_devices(struct oph_application *app)
         nullptr);
 
     app->backend.vk_physical_devices = oph_calloc(
-        &app->allocator,
+        &app->sys,
         vk->n_physical_devices,
         sizeof(*app->backend.vk_physical_devices));
 
     app->backend.physical_devices = oph_calloc(
-        &app->allocator,
+        &app->sys,
         vk->n_physical_devices,
         sizeof(*app->backend.physical_devices));
 
@@ -443,7 +410,7 @@ static void oph_app_init_vk_swapchain(struct oph_application *app)
     }
 
     app->swapchain.images = oph_calloc(
-        &app->allocator,
+        &app->sys,
         app->swapchain.n_images,
         sizeof(*app->swapchain.images));
 
@@ -459,7 +426,7 @@ static void oph_app_init_vk_swapchain(struct oph_application *app)
     }
 
     app->swapchain.image_views = oph_calloc(
-        &app->allocator,
+        &app->sys,
         app->swapchain.n_images,
         sizeof(*app->swapchain.image_views));
 
@@ -479,10 +446,9 @@ void oph_app_init(
     )
 {
     memset(app, 0, sizeof(*app));
-
-    app->allocator = default_allocator;
-
+    oph_sys_init(config, &app->sys);
     oph_app_init_presentation(config, app);
+
 
     VkApplicationInfo app_info = {};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;

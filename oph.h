@@ -113,9 +113,14 @@ struct oph_vk_swapchain
 };
 
 
-struct oph_application
+struct oph_sys
 {
     struct oph_allocator allocator;
+};
+
+struct oph_application
+{
+    struct oph_sys sys;
     struct oph_frame frame;
     struct oph_display display;
     struct oph_device device;
