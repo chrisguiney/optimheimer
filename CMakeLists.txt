@@ -11,7 +11,7 @@ add_subdirectory(ext/shaderc)
 add_subdirectory(ext/glfw)
 
 find_package(OpenGL REQUIRED)
-find_package(Vulkan REQUIRED)
+find_package(Vulkan 1.3 REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 add_executable(optimheimer
@@ -35,6 +35,7 @@ target_link_libraries(
         OpenGL::GL
         glfw
         Vulkan::Vulkan
+        sqlite3
 )
 
 # see also:

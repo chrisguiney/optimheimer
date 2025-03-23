@@ -4,11 +4,12 @@
 
 #ifndef OPH_H
 #define OPH_H
+#include "GLFW/glfw3.h"
+#include "nuklear.h"
+
+#include <sqlite3.h>
 #include <stdint.h>
 #include <vulkan/vulkan.h>
-
-#include "nuklear.h"
-#include "GLFW/glfw3.h"
 
 struct oph_frame
 {
@@ -116,6 +117,8 @@ struct oph_vk_swapchain
 struct oph_sys
 {
     struct oph_allocator allocator;
+    sqlite3 *db;
+
 };
 
 struct oph_application
@@ -132,6 +135,7 @@ struct oph_application
 
 struct oph_configuration
 {
+    const char *db_path;
     int32_t initial_window_width;
     int32_t initial_window_height;
 };

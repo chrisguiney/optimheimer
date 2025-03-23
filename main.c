@@ -60,6 +60,7 @@ int main(void)
     printf("Extension count: %d\n", extension_count);
 
     struct oph_configuration config = {
+        .db_path = "oph.db",
         .initial_window_width = 640,
         .initial_window_height = 480
     };

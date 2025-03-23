@@ -5,9 +5,13 @@
 #ifndef OPH_ALLOCATOR_H
 #define OPH_ALLOCATOR_H
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct oph_sys;
 
 void* oph_calloc(
     struct oph_sys* sys,

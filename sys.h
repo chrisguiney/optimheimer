@@ -24,6 +24,8 @@ void oph_sys_init(
     struct oph_sys* sys
 );
 
+void oph_sys_destroy(struct oph_sys *sys);
+
 #ifdef __cplusplus
 };
 #endif
