@@ -4,6 +4,7 @@
 
 #ifndef OPH_H
 #define OPH_H
+#define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "nuklear.h"
 
@@ -82,9 +83,8 @@ struct oph_vk_logical_device
     VkQueue graphics_queue;
 };
 
-struct oph_vk_backend
+struct oph_vk_devices
 {
-    VkInstance instance;
     VkPhysicalDevice* vk_physical_devices;
 
     uint32_t n_physical_devices;
@@ -113,12 +113,26 @@ struct oph_vk_swapchain
     VkImageView* image_views;
 };
 
+struct oph_vk_defaults
+{
+    int32_t initial_window_width;
+    int32_t initial_window_height;
+};
+
+struct oph_vk_state
+{
+    VkInstance instance;
+    struct oph_vk_defaults defaults;
+    struct oph_vk_devices backend;
+    struct oph_vk_presentation presentation;
+    struct oph_vk_swapchain swapchain;
+};
+
 
 struct oph_sys
 {
     struct oph_allocator allocator;
     sqlite3 *db;
-
 };
 
 struct oph_application
@@ -127,10 +141,7 @@ struct oph_application
     struct oph_frame frame;
     struct oph_display display;
     struct oph_device device;
-
-    struct oph_vk_backend backend;
-    struct oph_vk_presentation presentation;
-    struct oph_vk_swapchain swapchain;
+    struct oph_vk_state vk;
 };
 
 struct oph_configuration

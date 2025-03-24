@@ -71,7 +71,7 @@ int main(void)
     struct nk_context nk_ctx;
     nk_init_default(&nk_ctx, &app.device.atlas.default_font->handle);
 
-    GLFWwindow *window = app.presentation.window;
+    GLFWwindow *window = app.vk.presentation.window;
     glfwMakeContextCurrent(window);
     while (!glfwWindowShouldClose(window))
     {
