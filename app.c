@@ -19,13 +19,8 @@ void oph_app_init(const struct oph_configuration *config,
                   struct oph_application *app)
 {
     memset(app, 0, sizeof(*app));
-    oph_sys_init(config, &app->sys);
-
-    struct oph_vk_defaults defaults = {
-       .initial_window_height = config->initial_window_height,
-        .initial_window_width = config->initial_window_width,
-    };
-    oph_vk_init(&app->sys, &defaults, &app->vk);
+    oph_sys_init(&config->sys, &app->sys);
+    oph_vk_init(&app->sys, &config->vk, &app->vk);
 }
 
 void oph_app_destroy(struct oph_application *app)

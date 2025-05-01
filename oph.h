@@ -37,9 +37,11 @@ struct oph_device
 
 struct oph_allocator;
 
-typedef void* oph_allocator_ctx;
-typedef void* (*oph_calloc_fn)(oph_allocator_ctx ctx, size_t nmemb, size_t size);
-typedef void (*oph_free_fn)(oph_allocator_ctx ctx, void*);
+typedef void *oph_allocator_ctx;
+typedef void *(*oph_calloc_fn)(oph_allocator_ctx ctx,
+                               size_t nmemb,
+                               size_t size);
+typedef void (*oph_free_fn)(oph_allocator_ctx ctx, void *);
 
 struct oph_allocator
 {
@@ -48,7 +50,6 @@ struct oph_allocator
     oph_free_fn free;
 };
 
-
 struct oph_vk_physical_device
 {
     VkPhysicalDevice handle;
@@ -56,10 +57,10 @@ struct oph_vk_physical_device
     VkPhysicalDeviceFeatures features;
 
     uint32_t n_extension_properties;
-    VkExtensionProperties* extension_properties;
+    VkExtensionProperties *extension_properties;
 
     uint32_t n_queue_families;
-    VkQueueFamilyProperties* queue_families;
+    VkQueueFamilyProperties *queue_families;
 
     VkBool32 have_graphics_queue_family;
     uint32_t graphics_queue_family;
@@ -71,10 +72,10 @@ struct oph_vk_physical_device
     VkSurfaceCapabilitiesKHR surface_capabilities;
 
     uint32_t n_surface_formats;
-    VkSurfaceFormatKHR* surface_formats;
+    VkSurfaceFormatKHR *surface_formats;
 
     uint32_t n_present_modes;
-    VkPresentModeKHR* present_modes;
+    VkPresentModeKHR *present_modes;
 };
 
 struct oph_vk_logical_device
@@ -85,18 +86,18 @@ struct oph_vk_logical_device
 
 struct oph_vk_devices
 {
-    VkPhysicalDevice* vk_physical_devices;
+    VkPhysicalDevice *vk_physical_devices;
 
     uint32_t n_physical_devices;
-    struct oph_vk_physical_device* physical_devices;
-    struct oph_vk_physical_device* physical_device;
+    struct oph_vk_physical_device *physical_devices;
+    struct oph_vk_physical_device *physical_device;
 
     struct oph_vk_logical_device logical_device;
 };
 
 struct oph_vk_presentation
 {
-    GLFWwindow* window;
+    GLFWwindow *window;
     int32_t framebuffer_width;
     int32_t framebuffer_height;
 };
@@ -109,25 +110,33 @@ struct oph_vk_swapchain
     VkExtent2D extent;
 
     uint32_t n_images;
-    VkImage* images;
-    VkImageView* image_views;
+    VkImage *images;
+    VkImageView *image_views;
 };
 
-struct oph_vk_defaults
+struct oph_vk_config
 {
+    bool enable_validation_layers;
     int32_t initial_window_width;
     int32_t initial_window_height;
+};
+
+struct oph_vk_validation
+{
+    bool enable;
+    uint32_t n_layers;
+    VkLayerProperties *available_layers;
 };
 
 struct oph_vk_state
 {
     VkInstance instance;
-    struct oph_vk_defaults defaults;
+    struct oph_vk_config config;
+    struct oph_vk_validation validation;
     struct oph_vk_devices backend;
     struct oph_vk_presentation presentation;
     struct oph_vk_swapchain swapchain;
 };
-
 
 struct oph_sys
 {
@@ -144,12 +153,24 @@ struct oph_application
     struct oph_vk_state vk;
 };
 
-struct oph_configuration
+struct oph_sys_config
 {
     const char *db_path;
+};
+
+struct oph_app_config
+{
     int32_t initial_window_width;
     int32_t initial_window_height;
 };
 
+struct oph_configuration
+{
+    struct oph_sys_config sys;
+    struct oph_vk_config vk;
+    struct oph_app_config app;
+
+    bool enable_validation_layers;
+};
 
 #endif //OPH_H

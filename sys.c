@@ -35,7 +35,7 @@ void oph_sys_free(void* ctx, void *ptr)
 }
 
 void oph_sys_init(
-    const struct oph_configuration *config,
+    const struct oph_sys_config *config,
     struct oph_sys *sys
     )
 {

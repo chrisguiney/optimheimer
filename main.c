@@ -1,33 +1,35 @@
 #include <math.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include "oph.h"
 #include "app.h"
 #include "device.h"
+#include "oph.h"
+
+#include <GLFW/glfw3.h>
 
 #define MAX_MEMORY (128 * 1024 * 1024) // 128mb
 
-void draw(struct nk_context* ctx)
+void draw(struct nk_context *ctx)
 {
-    if (
-        nk_begin(ctx, "Show", nk_rect(50, 50, 220, 220),
-                 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE))
+    if(nk_begin(ctx,
+                "Show",
+                nk_rect(50, 50, 220, 220),
+                NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_CLOSABLE))
     {
         nk_layout_row_static(ctx, 30, 80, 1);
-        if (nk_button_label(ctx, "button"))
+        if(nk_button_label(ctx, "button"))
         {
             // event handling
         }
-
     }
 }
 
-void tick(GLFWwindow* window, struct nk_context* nk_ctx, struct oph_application *app)
+void tick(GLFWwindow *window,
+          struct nk_context *nk_ctx,
+          struct oph_application *app)
 {
     glfwGetWindowSize(window, &app->frame.width, &app->frame.height);
     glfwGetFramebufferSize(window, &app->display.width, &app->display.height);
@@ -46,24 +48,24 @@ void tick(GLFWwindow* window, struct nk_context* nk_ctx, struct oph_application 
 
 int main(void)
 {
-    if (!glfwInit())
+    if(!glfwInit())
     {
         abort();
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-
     uint32_t extension_count = 0;
     vkEnumerateInstanceExtensionProperties(NULL, &extension_count, NULL);
 
     printf("Extension count: %d\n", extension_count);
 
-    struct oph_configuration config = {
-        .db_path = "oph.db",
-        .initial_window_width = 640,
-        .initial_window_height = 480
-    };
+    struct oph_configuration config = {.sys = {"oph.db"},
+                                       .vk = {.enable_validation_layers = true},
+                                       .app = {
+                                           .initial_window_width = 640,
+                                           .initial_window_height = 480,
+                                       }};
 
     struct oph_application app;
     oph_app_init(&config, &app);
@@ -73,7 +75,7 @@ int main(void)
 
     GLFWwindow *window = app.vk.presentation.window;
     glfwMakeContextCurrent(window);
-    while (!glfwWindowShouldClose(window))
+    while(!glfwWindowShouldClose(window))
     {
         tick(window, &nk_ctx, &app);
     }

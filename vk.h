@@ -11,11 +11,11 @@ extern "C"
 #endif
 
 struct oph_sys;
-struct oph_vk_defaults;
+struct oph_vk_config;
 struct oph_vk_state;
 
 void oph_vk_init(struct oph_sys *sys,
-                 const struct oph_vk_defaults *defaults,
+                 const struct oph_vk_config *vkconf,
                  struct oph_vk_state *vk);
 
 #ifdef __cplusplus

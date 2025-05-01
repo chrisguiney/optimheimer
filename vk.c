@@ -13,6 +13,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+static const char *device_extensions[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+};
+
+const char *validation_layers[] = {
+    "VK_LAYER_KHRONOS_validation",
+};
+
 static bool oph_vk_is_vk_device_suitable(struct oph_vk_state *vk,
                                          struct oph_vk_physical_device *dev)
 {
@@ -109,8 +117,8 @@ static void oph_vk_init_dev_surface(struct oph_sys *sys,
     vkGetPhysicalDeviceSurfaceFormatsKHR(
         dev->handle, dev->surface, &dev->n_surface_formats, nullptr);
 
-    dev->surface_formats
-        = oph_calloc(sys, dev->n_surface_formats, sizeof(VkSurfaceFormatKHR));
+    dev->surface_formats = oph_calloc(
+        sys, dev->n_surface_formats, sizeof(*dev->surface_formats));
 
     vkGetPhysicalDeviceSurfaceFormatsKHR(dev->handle,
                                          dev->surface,
@@ -215,14 +223,12 @@ static void oph_vk_init_physical_devices(struct oph_sys *sys,
     }
 }
 
-static const char *device_extensions[] = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-};
-
-static void oph_vk_init_logical_devices(struct oph_vk_state *vk,
-                                        struct oph_vk_physical_device *dev,
-                                        struct oph_vk_logical_device *ldev)
+static void oph_vk_init_logical_devices(struct oph_vk_state *vk)
 {
+    assert(vk != nullptr);
+    struct oph_vk_physical_device *dev = vk->backend.physical_device;
+    struct oph_vk_logical_device *ldev = &vk->backend.logical_device;
+
     VkDeviceQueueCreateInfo queue_create_info = {};
     queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue_create_info.queueFamilyIndex = dev->graphics_queue_family;
@@ -259,8 +265,8 @@ static void oph_vk_init_logical_devices(struct oph_vk_state *vk,
 static void oph_vk_init_presentation(struct oph_vk_state *vk)
 {
     vk->presentation.window
-        = glfwCreateWindow(vk->defaults.initial_window_width,
-                           vk->defaults.initial_window_height,
+        = glfwCreateWindow(vk->config.initial_window_width,
+                           vk->config.initial_window_height,
                            "Optimheimer",
                            nullptr,
                            nullptr);
@@ -408,13 +414,52 @@ static void oph_vk_init_shaders(struct oph_sys *sys, struct oph_vk_state *vk)
                  &errmsg);
 }
 
-void oph_vk_init(struct oph_sys *sys,
-                 const struct oph_vk_defaults *defaults,
-                 struct oph_vk_state *vk)
+static bool oph_vk_have_validation_layer(struct oph_vk_state *vk,
+                                         const char *layer)
 {
-    memset(vk, 0, sizeof(*vk));
-    vk->defaults = *defaults;
+    assert(layer != nullptr);
+    assert(*layer);
+    assert(vk != nullptr);
+    for(size_t i = 0; i < vk->validation.n_layers; ++i)
+    {
+        assert(vk->validation.available_layers != nullptr);
+        const char *layerName = vk->validation.available_layers[i].layerName;
+        if(strcmp(layerName, layer) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 
+static void oph_vk_init_validation_layers(struct oph_sys *sys,
+                                          struct oph_vk_state *vk)
+{
+    if(!vk->validation.enable)
+    {
+        return;
+    }
+
+    vkEnumerateInstanceLayerProperties(&vk->validation.n_layers, nullptr);
+
+    vk->validation.available_layers = oph_calloc(
+        sys, vk->validation.n_layers, sizeof(*vk->validation.available_layers));
+
+    vkEnumerateInstanceLayerProperties(&vk->validation.n_layers,
+                                       vk->validation.available_layers);
+
+    size_t elements = sizeof(validation_layers) / sizeof(*validation_layers);
+    for(size_t i = 0; i < elements; ++i)
+    {
+        if(!oph_vk_have_validation_layer(vk, validation_layers[i]))
+        {
+            abort();
+        }
+    }
+}
+
+static void oph_vk_init_instance(struct oph_vk_state *vk)
+{
     VkApplicationInfo app_info = {};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.pApplicationName = "oph";
@@ -434,18 +479,36 @@ void oph_vk_init(struct oph_sys *sys,
     create_info.enabledExtensionCount = glfw_extension_count;
     create_info.ppEnabledExtensionNames = glfw_extensions;
 
-    create_info.enabledLayerCount = 0;
+    if(vk->validation.enable)
+    {
+        create_info.enabledLayerCount
+            = sizeof(validation_layers) / sizeof(validation_layers[0]);
+        create_info.ppEnabledLayerNames = validation_layers;
+    }
+    else
+    {
+        create_info.enabledLayerCount = 0;
+    }
 
     VkResult res = vkCreateInstance(&create_info, nullptr, &vk->instance);
-    if(res)
+    if(res != VK_SUCCESS)
     {
         abort();
     }
+}
 
+void oph_vk_init(struct oph_sys *sys,
+                 const struct oph_vk_config *vkconf,
+                 struct oph_vk_state *vk)
+{
+    memset(vk, 0, sizeof(*vk));
+    vk->config = *vkconf;
+
+    oph_vk_init_validation_layers(sys, vk);
     oph_vk_init_presentation(vk);
+    oph_vk_init_instance(vk);
     oph_vk_init_physical_devices(sys, vk);
-    oph_vk_init_logical_devices(
-        vk, vk->backend.physical_device, &vk->backend.logical_device);
+    oph_vk_init_logical_devices(vk);
     oph_vk_init_swapchain(sys, vk);
     oph_vk_init_shaders(sys, vk);
 }
